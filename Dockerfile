@@ -37,6 +37,10 @@ RUN git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git && \
 RUN git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git && \
     pip install --no-cache-dir -r ComfyUI-Impact-Subpack/requirements.txt || true
 
+# --- extra_model_paths.yaml: пути к pulid/ultralytics/insightface на volume ---
+# (worker-comfyui сам прописывает только стандартные папки checkpoints/loras/...)
+COPY extra_model_paths.yaml /comfyui/extra_model_paths.yaml
+
 # --- EVA-CLIP: запекаем в образ, чтобы PuLID не качал его на холодном старте ---
 # PuLID грузит EVA02-CLIP-L-14-336 через open_clip / HF Hub. Прогреваем кэш при сборке.
 RUN python -c "from huggingface_hub import hf_hub_download; \

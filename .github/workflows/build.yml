@@ -1,5 +1,9 @@
 name: build-and-push
 
+# Собирает Docker-образ и пушит в Docker Hub при каждом push в main.
+# Нужны secrets в настройках репозитория:
+#   DOCKERHUB_USERNAME — твой логин Docker Hub
+#   DOCKERHUB_TOKEN    — Access Token (Docker Hub -> Account Settings -> Security)
 
 on:
   push:
@@ -28,4 +32,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/comfyui-epicrealism-pulid:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/comfyui-epicrealism-pulid:v2

@@ -1,0 +1,13 @@
+# Доп. пути к моделям на Network Volume (/runpod-volume/models).
+# Решает проблему, что worker-comfyui автоматически прописывает только
+# стандартные папки, а pulid и ultralytics (от кастомных нод) — нет.
+comfyui_volume:
+  base_path: /runpod-volume/
+  checkpoints: models/checkpoints/
+  loras: models/loras/
+  clip_vision: models/clip_vision/
+  pulid: models/pulid/
+  insightface: models/insightface/
+  ultralytics_bbox: models/ultralytics/bbox/
+  ultralytics_segm: models/ultralytics/segm/
+  ultralytics: models/ultralytics/

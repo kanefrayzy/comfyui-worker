@@ -37,9 +37,15 @@ RUN git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git && \
 RUN git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git && \
     pip install --no-cache-dir -r ComfyUI-Impact-Subpack/requirements.txt || true
 
-# --- extra_model_paths.yaml: пути к pulid/ultralytics/insightface на volume ---
-# (worker-comfyui сам прописывает только стандартные папки checkpoints/loras/...)
-COPY extra_model_paths.yaml /comfyui/extra_model_paths.yaml
+# --- Симлинки для папок, которые кастомные ноды ищут в /comfyui/models/ ---
+# PuLID и Impact-Subpack (ultralytics) НЕ читают extra_model_paths — они смотрят
+# жёстко в /comfyui/models/{pulid,ultralytics,insightface}. Линкуем их на volume.
+# Симлинк создаётся при сборке, резолвится при обращении уже на работающем воркере
+# (где /runpod-volume примонтирован).
+RUN rm -rf /comfyui/models/pulid /comfyui/models/ultralytics /comfyui/models/insightface && \
+    ln -s /runpod-volume/models/pulid       /comfyui/models/pulid && \
+    ln -s /runpod-volume/models/ultralytics /comfyui/models/ultralytics && \
+    ln -s /runpod-volume/models/insightface /comfyui/models/insightface
 
 # --- EVA-CLIP: запекаем в образ, чтобы PuLID не качал его на холодном старте ---
 # PuLID грузит EVA02-CLIP-L-14-336 через open_clip / HF Hub. Прогреваем кэш при сборке.

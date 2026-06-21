@@ -47,6 +47,15 @@ RUN rm -rf /comfyui/models/pulid /comfyui/models/ultralytics /comfyui/models/ins
     ln -s /runpod-volume/models/ultralytics /comfyui/models/ultralytics && \
     ln -s /runpod-volume/models/insightface /comfyui/models/insightface
 
+# --- facexlib weights: запекаем в образ ---
+# FaceDetailer/PuLID тянут эти файлы с GitHub при каждом старте в site-packages
+# (эфемерный диск), что замедляет холодный старт. Качаем заранее в нужную папку.
+RUN FXDIR=$(python -c "import facexlib, os; print(os.path.join(os.path.dirname(facexlib.__file__), 'weights'))") && \
+    mkdir -p "$FXDIR" && \
+    wget -O "$FXDIR/detection_Resnet50_Final.pth" https://github.com/xinntao/facexlib/releases/download/v0.1.0/detection_Resnet50_Final.pth && \
+    wget -O "$FXDIR/parsing_parsenet.pth"        https://github.com/xinntao/facexlib/releases/download/v0.2.2/parsing_parsenet.pth && \
+    wget -O "$FXDIR/parsing_bisenet.pth"         https://github.com/xinntao/facexlib/releases/download/v0.2.0/parsing_bisenet.pth
+
 # --- EVA-CLIP: запекаем в образ, чтобы PuLID не качал его на холодном старте ---
 # PuLID грузит EVA02-CLIP-L-14-336 через open_clip / HF Hub. Прогреваем кэш при сборке.
 RUN python -c "from huggingface_hub import hf_hub_download; \
